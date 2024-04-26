@@ -11,22 +11,12 @@ document.addEventListener('DOMContentLoaded', function () {
         'instrucciones': () => window.location.href = 'documentacion.html'
     };
 
-    function iniciarReconocimiento() {
-        recognition = new webkitSpeechRecognition();
-        recognition.lang = 'es-ES';
-        recognition.continuous = true; // Reconocimiento continuo
-
-        recognition.onresult = function (event) {
-            const transcript = event.results[event.results.length - 1][0].transcript; // Último resultado
-            voiceResult.textContent = 'Tu dijiste: ' + transcript;
-            ejecutarComando(transcript);
-        };
-
-        recognition.onerror = function (event) {
-            console.error('Error en el reconocimiento de voz: ' + event.error);
-        };
-
-        recognition.start(); // Iniciar el reconocimiento de voz
+    function manejarComandosRecibidos(comando) {
+        const receivedCommands = document.getElementById('receivedCommands');
+        
+        const commandElement = document.createElement('div');
+        commandElement.textContent = comando;
+        receivedCommands.appendChild(commandElement);
     }
 
     function ejecutarComando(transcript) {
@@ -38,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (transcript.includes(comando)) {
                 funcion();
                 enviarComandoAMockAPI(comando);
+                manejarComandosRecibidos(comando);  // Mostrar el comando recibido solo en pruebamockapi.html
                 ejecutado = true;
                 break;
             }
@@ -46,6 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!ejecutado) {
             mostrarError();
             enviarComandoAMockAPI(transcript); // Enviar la oración completa al MockAPI
+            manejarComandosRecibidos(transcript);  // Mostrar el comando recibido solo en pruebamockapi.html
         }
     }
 
